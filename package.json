@@ -2,7 +2,7 @@
   "name": "dartcopyhelper",
   "displayName": "Dart Copy Helper",
   "description": "Help developers to generate a copy function for classes",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "SSBun-caishilin",
   "icon": "images/icon.png",
   "engines": {
