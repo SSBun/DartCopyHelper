@@ -1,0 +1,62 @@
+{
+  "name": "dartcopyhelper",
+  "displayName": "DartCopyHelper",
+  "description": "Help developers to generate a copy function for classes",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.59.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:dart"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "dartcopyhelper.generateCloneFunc",
+        "title": "Generate a clone function"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "antlr4ts": "antlr4ts -visitor ./src/JSON/JSON.g4"
+  },
+  "configuration": {
+    "type": "object",
+    "title": "Dart Copy Helper",
+    "properties": {
+      "dartcopyhelper.copyToClipboard": {
+        "type": "boolean",
+        "default": false,
+        "description": "Copy the generated code to clipboard",
+        "scope": "window"
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.59.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "antlr4ts-cli": "^0.5.0-alpha.4",
+    "eslint": "^7.27.0",
+    "glob": "^7.1.7",
+    "mocha": "^8.4.0",
+    "typescript": "^4.3.2",
+    "vscode-test": "^1.5.2"
+  },
+  "dependencies": {
+    "antlr4ts": "^0.5.0-alpha.4"
+  }
+}
