@@ -17,3 +17,4 @@
 Can auto-generate an clone function for your dart classes
 
 **Enjoy!**
+jms7k4ropzshvd5q2y6texcd5rmehft3wrrpuci25zrulvbdjf7q

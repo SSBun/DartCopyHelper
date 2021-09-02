@@ -3,6 +3,7 @@
   "displayName": "DartCopyHelper",
   "description": "Help developers to generate a copy function for classes",
   "version": "0.0.1",
+  "publisher": "SSBun-caishilin",
   "engines": {
     "vscode": "^1.59.0"
   },
