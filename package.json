@@ -1,15 +1,18 @@
 {
   "name": "dartcopyhelper",
-  "displayName": "DartCopyHelper",
+  "displayName": "Dart Copy Helper",
   "description": "Help developers to generate a copy function for classes",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "SSBun-caishilin",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.59.0"
   },
   "categories": [
-    "Other"
+    "Snippets",
+    "Programming Languages"
   ],
+  "keywords": ["Dart", "Copy", "Redux", "Flutter", "Fish Redux"],
   "activationEvents": [
     "onLanguage:dart"
   ],
