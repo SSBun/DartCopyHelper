@@ -12,9 +12,8 @@
 
 ## Release Notes
 
-### 0.0.1
+### 0.0.3
 
 Can auto-generate an clone function for your dart classes
 
 **Enjoy!**
-jms7k4ropzshvd5q2y6texcd5rmehft3wrrpuci25zrulvbdjf7q
