@@ -2,7 +2,7 @@
   "name": "dartcopyhelper",
   "displayName": "Dart Copy Helper",
   "description": "Help developers to generate a copy function for classes",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "publisher": "SSBun-caishilin",
   "icon": "images/icon.png",
   "engines": {
@@ -12,7 +12,13 @@
     "Snippets",
     "Programming Languages"
   ],
-  "keywords": ["Dart", "Copy", "Redux", "Flutter", "Fish Redux"],
+  "keywords": [
+    "Dart",
+    "Copy",
+    "Redux",
+    "Flutter",
+    "Fish Redux"
+  ],
   "activationEvents": [
     "onLanguage:dart"
   ],
@@ -20,8 +26,20 @@
   "contributes": {
     "commands": [
       {
-        "command": "dartcopyhelper.generateCloneFunc",
-        "title": "Generate a clone function"
+        "command": "dartcopyhelper.generateCloneFuncToClass",
+        "title": "Generate a clone function into class"
+      },
+      {
+        "command": "dartcopyhelper.generateCopyWithFuncToClass",
+        "title": "Generate a copy with function into class"
+      },
+      {
+        "command": "dartcopyhelper.generateCloneFuncToClipboard",
+        "title": "Generate a clone function to clipboard"
+      },
+      {
+        "command": "dartcopyhelper.generateCopyWithFuncToClipboard",
+        "title": "Generate a copy with function to clipboard"
       }
     ]
   },

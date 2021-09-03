@@ -7,12 +7,33 @@ import {
   CompilationUnitContext,
   Dart2Parser,
   DeclarationContext,
+  DtypeContext,
   IdentifierContext,
 } from "./dart/Dart2Parser";
 import * as vscode from "vscode";
 
 export namespace DartAnalyser {
-  export function generateCloneFunction() {
+  class Property {
+    name: string;
+    type: string;
+    constructor(name: string, type: string) {
+      this.name = name;
+      this.type = type;
+    }
+  }
+  export enum GeneratingType {
+    clone,
+    copyWith,
+  }
+  export enum DisplayType {
+    writeInClass,
+    writeToClipboard,
+  }
+
+  export function generateCloneFunction(
+    generatingType: GeneratingType = GeneratingType.clone,
+    displayType: DisplayType = DisplayType.writeInClass
+  ) {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
       return;
@@ -52,15 +73,25 @@ export namespace DartAnalyser {
         null,
         null,
         (item) => {
-          return item.childCount > 0 && item.getChild(0) instanceof DeclarationContext;
+          return (
+            item.childCount > 0 &&
+            item.getChild(0) instanceof DeclarationContext
+          );
         }
       );
       let offsetWidth = 0;
       if (properties.length > 0) {
         offsetWidth = properties[0].start.charPositionInLine;
         console.log(`find ${properties.length} properties`);
-        let propertyNameList: string[] = [];
+        let propertyList: Property[] = [];
         for (var item of properties) {
+          const typeContext = findContext(
+            DtypeContext,
+            item,
+            1,
+            null,
+            null
+          ).pop();
           const propertyIdentifier = findContext(
             IdentifierContext,
             item,
@@ -68,19 +99,31 @@ export namespace DartAnalyser {
             null,
             null
           )[0];
-          const propertyName = propertyIdentifier.text;
-          propertyNameList.push(propertyName);
-          console.log(`property: ${propertyName}`);
+          const property = new Property(
+            propertyIdentifier.text,
+            typeContext?.text ?? "any"
+          );
+          propertyList.push(property);
         }
-        const cloneFunctionCode = generateCloneCode(
+        const cloneFunctionCode = generateCode(
+          generatingType,
           className,
-          propertyNameList,
+          propertyList,
           offsetWidth
         );
         console.log(cloneFunctionCode);
-        let endLine = currentClass.stop!.line;
-        let position: vscode.Position = new vscode.Position(endLine - 1, 0);
-        editor.insertSnippet(new vscode.SnippetString(cloneFunctionCode), position);
+
+        if (displayType === DisplayType.writeInClass) {
+          let endLine = currentClass.stop!.line;
+          let position: vscode.Position = new vscode.Position(endLine - 1, 0);
+          editor.insertSnippet(
+            new vscode.SnippetString(cloneFunctionCode),
+            position
+          );
+        } else {
+          vscode.env.clipboard.writeText(cloneFunctionCode);
+          vscode.window.showInformationMessage("生成的方法已经复制进粘贴板");
+        }
       }
     } else {
       console.log("not found this class");
@@ -107,12 +150,12 @@ export namespace DartAnalyser {
       for (let i = 1; i <= currentLevelSize; ++i) {
         const node = q.shift()!;
         if (node instanceof metaClass) {
-        if (filter !== null) {
+          if (filter !== null) {
             if (!filter(node)) {
               continue;
             }
           }
-          if (line !== null) { 
+          if (line !== null) {
             if (node.start.line - 1 === line) {
               return [node];
             } else {
@@ -140,6 +183,19 @@ export namespace DartAnalyser {
     return ret;
   }
 
+  function generateCode(
+    type: GeneratingType,
+    className: string,
+    properties: Property[],
+    offsetWidth: number
+  ): string {
+    if (type === GeneratingType.clone) {
+      return generateCloneCode(className, properties, offsetWidth);
+    } else {
+      return generateCopyWithCode(className, properties, offsetWidth);
+    }
+  }
+
   //   @override
   //   CourseState clone() {
   //     return CourseState()
@@ -153,7 +209,7 @@ export namespace DartAnalyser {
   //   }
   function generateCloneCode(
     className: string,
-    properties: string[],
+    properties: Property[],
     offsetWidth: number
   ): string {
     const tab = (count: number) => {
@@ -163,11 +219,38 @@ export namespace DartAnalyser {
     code += tab(0) + `${className} clone() {\n`;
     code += tab(1) + `return ${className}()\n`;
     for (let i in properties) {
-      code += tab(2) + `..${properties[i]} = ${properties[i]}`;
+      let name = properties[i].name;
+      code += tab(2) + `..${name} = ${name}`;
       if (i === `${properties.length - 1}`) {
-        code += ';\n';        
+        code += ";\n";
       } else {
-        code += '\n';
+        code += "\n";
+      }
+    }
+    code += tab(0) + "}\n";
+    return code;
+  }
+  function generateCopyWithCode(
+    className: string,
+    properties: Property[],
+    offsetWidth: number
+  ): string {
+    const tab = (count: number) => {
+      return " ".repeat(offsetWidth + count * 2);
+    };
+    let code = tab(0) + `${className} copyWith({\n`;
+    for (let property of properties) {
+      code += tab(1) + `${property.type} ${property.name},\n`;
+    }
+    code += tab(0) + `}) {\n`;
+    code += tab(1) + `return ${className}()\n`;
+    for (let i in properties) {
+      let name = properties[i].name;
+      code += tab(2) + `..${name} = ${name} ?? this.${name}`;
+      if (i === `${properties.length - 1}`) {
+        code += ";\n";
+      } else {
+        code += "\n";
       }
     }
     code += tab(0) + "}\n";
